@@ -29,6 +29,24 @@ This guide explains how to run the AI Language Tutor using Docker.
    ```
 
 3. **Build and run:**
+   Create a `docker-compose.yml`:
+   ```yml
+   services:
+     language-tutor:
+       build: .
+       container_name: ai-language-tutor
+       ports:
+         - "8501:8501"
+       environment:
+         - OPENAI_API_KEY=${OPENAI_API_KEY}
+       volumes:
+         # Persist user data
+         - ./assets:/app/assets
+         # Mount config for easy changes without rebuilding
+         - ./utils/config.json:/app/utils/config.json
+       restart: unless-stopped
+   ```
+   and run the service:
    ```bash
    docker-compose up -d
    ```
@@ -36,24 +54,6 @@ This guide explains how to run the AI Language Tutor using Docker.
 4. **Access the app:**
    Open your browser to `http://localhost:8501`
 
-## Docker Commands
-
-```bash
-# Start the application
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop the application
-docker-compose down
-
-# Rebuild after code changes
-docker-compose up -d --build
-
-# Remove everything including volumes
-docker-compose down -v
-```
 
 ## Data Persistence
 
@@ -67,15 +67,7 @@ The following files are persisted:
 
 ## Configuration Changes
 
-The `utils/config.json` file is also mounted as a volume, so you can change the language or model settings without rebuilding the container:
-
-```bash
-# Edit the config
-nano utils/config.json
-
-# Restart to apply changes
-docker-compose restart
-```
+The `utils/config.json` file is also mounted as a volume, so you can change the language or model settings without rebuilding the container.
 
 ## Troubleshooting
 
@@ -87,10 +79,7 @@ ports:
 ```
 
 **API key not working:**
-Verify your `.env` file contains a valid OpenAI API key:
-```bash
-cat .env
-```
+Verify your `.env` file contains a valid OpenAI API key.
 
 **Reset all data:**
 To start fresh, remove the assets directory contents:
